@@ -1,7 +1,3 @@
-// index.js
-// where your node app starts
-
-// init project
 var express = require('express');
 var app = express();
 
@@ -24,9 +20,28 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
+// DATE & Timestamp API ENDPOINT
+app.get("/api/:date?", (req, res) => {
+   const { date } = req.params;
+   let inputDate;
+   if (!date) {
+    inputDate = new Date();
+  } else {
+    // Try to parse the provided date
+    inputDate = isNaN(date) ? new Date(date) : new Date(parseInt(date, 10));
+  }
+  if (isNaN(inputDate.getTime())) {
+    // If the date is invalid, return an error
+    return res.json({ error: "Invalid Date" });
+  }
+  // Respond with the date in the required format
+  res.json({
+    unix: inputDate.getTime(),
+    utc: inputDate.toUTCString()
+  });
+});
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+  console.log('Your app is listening on http://localhost:' + listener.address().port);
 });
